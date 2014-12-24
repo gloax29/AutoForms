@@ -1,7 +1,5 @@
 package eu.livotov.labs.vaadin.autoforms.ann;
 
-import eu.livotov.labs.vaadin.autoforms.api.FormFieldType;
-
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -30,6 +28,14 @@ public @interface TextTypeOptions
     public abstract boolean password() default false;
     public abstract String validationRegexp() default "";
     public abstract String validationErrorMessage() default "";
+/*
+ *modif Gloax29 02/10/2014 
+ */
+    public abstract String icon() default "" ;
+    public abstract String addstylename() default "";
+    public abstract int maxlength() default 0 ; 
+    public abstract String value() default "" ;
+    public abstract String caption() default "" ;
 
 
 }

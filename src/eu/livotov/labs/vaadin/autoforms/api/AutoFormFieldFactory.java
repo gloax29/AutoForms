@@ -1,22 +1,29 @@
 package eu.livotov.labs.vaadin.autoforms.api;
 
+
 import com.vaadin.ui.*;
+
 import eu.livotov.labs.vaadin.autoforms.ann.DateTypeOptions;
 import eu.livotov.labs.vaadin.autoforms.ann.FormField;
+import eu.livotov.labs.vaadin.autoforms.ann.TextTypeOptions;
 import eu.livotov.labs.vaadin.autoforms.api.validators.DateFieldValidator;
 
 import java.util.Date;
 
+
+
 /**
  * (c) Livotov Labs Ltd. 2012
  * Date: 28/07/2013
+ * 
+ * modif Gloax29 02/10/2014
  */
 public class AutoFormFieldFactory
 {
 
-    public static Field createFormField(java.lang.reflect.Field field, FormField metadata)
+    public static Field<?> createFormField(java.lang.reflect.Field field, FormField metadata)
     {
-        Field ui = null;
+        Field<?> ui = null;
         FormFieldType realType = metadata.type() == FormFieldType.Auto ? autodetectFieldType(field) : metadata.type();
 
         switch (realType)
@@ -48,6 +55,11 @@ public class AutoFormFieldFactory
             case MultiList:
                 ui = createMultiSelectField(field, metadata);
                 break;
+                
+            case Aeratext:
+                ui = createAeratextSelectField(field, metadata);
+                break;
+                
 
             default:
                 ui = createTextField(field, metadata);
@@ -68,28 +80,54 @@ public class AutoFormFieldFactory
         return ui;
     }
 
-    private static void buildFieldTitle(final Field ui, final java.lang.reflect.Field field, final FormField metadata)
+	private static void buildFieldTitle(final Field<?> ui, final java.lang.reflect.Field field, final FormField metadata)
     {
-        if (metadata.title() == null || metadata.title().trim().isEmpty() || metadata.title().equalsIgnoreCase("#field"))
+        if (metadata.title() == null || metadata.title().toString().trim().isEmpty() || metadata.title().toString().equalsIgnoreCase("#field"))
         {
             ui.setCaption(field.getName().toLowerCase());
         } else
         {
-            ui.setCaption(metadata.title());
+            ui.setCaption(metadata.title().toString());
         }
     }
 
-    public static Field createBooleanField(final java.lang.reflect.Field field, final FormField metadata)
+    public static Field<?> createBooleanField(final java.lang.reflect.Field field, final FormField metadata)
     {
         return new CheckBox();
     }
 
-    public static Field createTextField(final java.lang.reflect.Field field, final FormField metadata)
+    public static Field<?> createTextField(final java.lang.reflect.Field field, final FormField metadata)
     {
-        return new TextField();
+    	
+    	TextField ui = new TextField() ;
+    	
+    	TextTypeOptions textOptions = (TextTypeOptions) field.getAnnotation(TextTypeOptions.class);
+    	if(textOptions!=null){
+    		
+//    		min() default 0;
+//    		max() default 100;
+//    		multiline() default false;
+//    		lines() default 5;
+//    		password() default false;
+//    		validationRegexp() default "";
+//    		validationErrorMessage() default "";
+    		
+    	ui.addStyleName(textOptions.addstylename()) ;
+    		textOptions.min();
+    		textOptions.max();
+    		textOptions.multiline();
+    		textOptions.lines();
+    		textOptions.password();
+    		textOptions.validationRegexp();
+    		textOptions.validationErrorMessage();
+    		
+    		
+    	}
+  	
+        return ui ;
     }
 
-    public static Field createDateField(final java.lang.reflect.Field field, final FormField metadata)
+    public static Field<?> createDateField(final java.lang.reflect.Field field, final FormField metadata)
     {
         DateField ui = new DateField();
 
@@ -97,35 +135,44 @@ public class AutoFormFieldFactory
 
         if (dateOptions!=null)
         {
-            ui.setResolution(dateOptions.resulution());
-            ui.setDateFormat(dateOptions.format());
+           ui.setResolution(dateOptions.resulution());
+           ui.setDateFormat(dateOptions.format());
+         
         }
-
+        ui.setData(new Date());
         ui.removeAllValidators();
         ui.addValidator(new DateFieldValidator());
 
         return ui;
     }
+    
+   
 
-    public static Field createIntegerField(final java.lang.reflect.Field field, final FormField metadata)
+    public static Field<?> createIntegerField(final java.lang.reflect.Field field, final FormField metadata)
     {
         return new TextField();
     }
 
-    public static Field createDecimalField(final java.lang.reflect.Field field, final FormField metadata)
+    public static Field<?> createDecimalField(final java.lang.reflect.Field field, final FormField metadata)
     {
         return new TextField();
     }
 
-    public static Field createListField(final java.lang.reflect.Field field, final FormField metadata)
+    public static Field<?> createListField(final java.lang.reflect.Field field, final FormField metadata)
     {
-        return new ComboBox();
+        return new ListSelect();
     }
 
-    public static Field createMultiSelectField(final java.lang.reflect.Field field, final FormField metadata)
+    public static Field<?> createMultiSelectField(final java.lang.reflect.Field field, final FormField metadata)
     {
         return new ComboBox();
     }
+    
+    
+    public static Field<?> createAeratextSelectField(java.lang.reflect.Field field, FormField metadata) {
+		
+		return new TextArea();
+	}
 
     public static FormFieldType autodetectFieldType(final java.lang.reflect.Field field)
     {
@@ -155,5 +202,8 @@ public class AutoFormFieldFactory
         }
 
         return FormFieldType.Text;
-    }
+
+   }
 }
+
+

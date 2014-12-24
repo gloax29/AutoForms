@@ -43,10 +43,12 @@ Create POJO to represent your model
 
 ```java
 @FormBean(rows = 4, columns = 2, cancelButtonVisible = false, commitButtonVisible = false, title = "Регистрация", header = "Мы не будем утомлять вас длинной регистрацией. Укажите как вас зовут, адрес электронной почты и придумайте пароль. Все остальные данные, такие как адреса доставки, контактные телефоны и прочее вы сможете заполнить в любое удобное время в личном кабинете.")
-public class SignupForm implements Serializable
+public class SignupForm implements Serializable,SucceededListener
 {
-
-    @FormField(title = "Your name", location = "0,0,1,0", required = true, requiredFieldErrorMessage = "Please enter your name")
+	private File file;
+	private ForUpload upLoad ;
+    
+	@FormField(title = "Your name", location = "0,0,1,0", required = true, requiredFieldErrorMessage = "Please enter your name")
     private String name;
 
     @FormField(title = "E-Mail", location = "0,1,1,1", required = true, requiredFieldErrorMessage = "Please enter your e-mail")
@@ -61,10 +63,34 @@ public class SignupForm implements Serializable
 
     @FormField(title = "Type your password again", location = "1,3", required = true, requiredFieldErrorMessage = "Retype your password once again for verification")
     private String password2;
+@FormField(type=FormFieldType.component ,  title = "image upload ", location = "0,4" )
+	private Upload forImage ;
+	
+	@FormField( type=FormFieldType.component ,  title = "image affiche ", location = "1,4" )
+	private Embedded images;
 
     public SignupForm()
     {
+    init();
     }
+    private void init() {    
+    images = new Embedded();
+		images.setVisible(false);
+		upLoad = new ForUpload(this.images,file);
+		forImage = new Upload("images",upLoad );
+		forImage.setButtonCaption("Download");
+		forImage.setImmediate(true);//default false
+		forImage.addListener( this);
+		}
+		
+		@Override
+	public void uploadSucceeded(SucceededEvent event) {
+		file = upLoad.getFile() ;
+		 images.setVisible(true);
+	        images.setSource(new FileResource(file));
+
+		
+	}
 
     // getter and setters skipped...
 }
@@ -76,7 +102,14 @@ Add form to  your layout
 
 ```java
 AutoForm form = new AutoForm();
+//if listener implements Button.ClickListener in the class 
+form.setUiBtListenerCommit(this);
+form.setUiBtListenerCancel(this);
+//if not upload in the form
+form.setInternUpload(true,"download",true);
+//
 myWindowLayout.addComponent(form);
+
 ```
 
 
@@ -95,4 +128,7 @@ Get form data back
 ```java
 form.commit();
 form.getFormData();
+//if listener internat
+form.getfileUpload()
+//
 ```

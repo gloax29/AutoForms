@@ -9,7 +9,11 @@ import java.util.StringTokenizer;
  */
 public class CellConstraint implements Serializable
 {
-    private int startCell;
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+	private int startCell;
     private int endCell;
     private int startRow;
     private int endRow;

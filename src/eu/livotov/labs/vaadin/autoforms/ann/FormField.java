@@ -23,16 +23,21 @@ import java.lang.annotation.Target;
 public @interface FormField
 {
 
-    public abstract String title() default "#field";
+	public abstract String title() default "#field";
     public abstract String hint() default "";
     public abstract String description() default "";
     public abstract boolean required() default false;
+    /**
+     * sintaxe location="colum,row" or "colum,row, number colum , number row "
+     * @return
+     */
     public abstract String location();
     public abstract String width() default "100%";
     public abstract String height() default "";
     public abstract boolean visible() default true;
     public abstract FormFieldType type() default FormFieldType.Auto;
     public abstract String requiredFieldErrorMessage() default "";
+    public abstract boolean immediate() default true;
 
 
 }

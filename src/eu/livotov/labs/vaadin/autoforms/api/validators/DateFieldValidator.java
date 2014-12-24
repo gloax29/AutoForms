@@ -9,7 +9,12 @@ import com.vaadin.data.Validator;
 public class DateFieldValidator implements Validator
 {
 
-    public void validate(final Object value) throws InvalidValueException
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
+	public void validate(final Object value) throws InvalidValueException
     {
     }
 }
